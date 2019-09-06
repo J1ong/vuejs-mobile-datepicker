@@ -14,12 +14,12 @@ npm install vuejs-mobile-datepicker --save
 ```
 ``` javascript
 // use
-import Datepicker from 'vuejs-mobile-datepicker';
+import DatePicker from 'vuejs-mobile-datepicker';
 
 export default {
   // ...
   components: {
-    Datepicker
+    DatePicker
   }
   // ...
 }
@@ -29,7 +29,7 @@ export default {
 
 |  名称   | 描述  |  类型   | 默认值  |
 |  ----  | ----  |  ----  | ----  |
-| show-pick-model  | 控制日期选择器显示隐藏 | Boolean  | false |
+| show-picker-model  | 控制日期选择器显示隐藏 | Boolean  | false |
 | default-date  | 默认选择日期 | Date  | new Date() |
 | start-date  | 日期选择器可选最小日期 | Date  | new Date('1900-1-1') |
 | end-date  | 日期选择器可选最大日期 | Date  | new Date() |
