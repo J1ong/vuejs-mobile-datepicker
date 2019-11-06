@@ -1,6 +1,7 @@
 <template>
   <div id="mobile-datepicker" v-show="showPickerModel" @click.self="handleCancel">
     <div class="mdp_container">
+      <!-- 组件头部开始 -->
       <div class="mdp_header">
         <div
           class="mdp_current_year"
@@ -13,7 +14,10 @@
           @click="showDatePicker()"
         >{{this.currentMonth+1}}月{{this.currentDay}}日周{{this.week}}</div>
       </div>
+      <!-- 组件头部结束 -->
+      <!-- 组件主体内容开始 -->
       <div class="mdp_content">
+        <!-- 组件日期主体内容开始 -->
         <div class="mdp_date_content" v-show="!changeContentFlag">
           <div class="mdp_switch_month">
             <span
@@ -41,6 +45,7 @@
             >{{item?item:' '}}</span>
           </div>
         </div>
+        <!-- 组件年份主体内容结束 -->
         <div class="mdp_year_content" v-show="changeContentFlag">
           <ul ref="mdp_year_list">
             <li
@@ -52,10 +57,13 @@
           </ul>
         </div>
       </div>
+      <!-- 组件主体内容结束 -->
+      <!-- 组件操作按钮开始 -->
       <div class="mdp_operate_button">
         <button class="mdp_cancel_button mdp_button" @click="handleCancel">取消</button>
         <button class="mdp_sure_button mdp_button" @click="handleConfirm">确认</button>
       </div>
+      <!-- 组件操作按钮结束 -->
     </div>
   </div>
 </template>
@@ -64,7 +72,7 @@
 export default {
   name: "MobileDatepicker",
   props: {
-    showPickerModel: { //控制选择器显隐
+    showPickerModel: { //控制显隐
       type: Boolean,
       default: false
     },
@@ -89,20 +97,19 @@ export default {
     disableDate: { //禁用日期函数
       type: Function
     },
-    markWeekend: { //是否标记周末
+    markWeekend: { //标记周末
       type: Boolean,
       default: false
     }
   },
   created() {
-    if (this.showPickerModel && this.defaultDate) {
-      //保证刷新，数据不丢失
+    if (this.showPickerModel && this.defaultDate) {  //保证刷新，数据不丢失
       this.initDate(this.defaultDate); //初始化日期
     }
   },
   data() {
     return {
-      weeks: ["日", "一", "二", "三", "四", "五", "六"],  //周几
+      weeks: ["日", "一", "二", "三", "四", "五", "六"],  //周几数组
       days: [],  //某年某月的日期数组，如[0,0,1,2,3,4,....,31]
       years: [],  //可选范围的年份数组，如[1991,1992,...,2019]
       monthLastDay: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],  //某年对应月份最大天数
@@ -113,12 +120,11 @@ export default {
       day: null,  
       currentDay: null,  
       week: null, 
-      changeContentFlag: false  //控制选择器显隐
+      changeContentFlag: false  //切换主体内容显示为日期或年份
     };
   },
   watch: {
-    showPickerModel(newVal, oldVal) {
-      //监测showPickerModel的变动
+    showPickerModel(newVal, oldVal) { //监测showPickerModel的变动
       if (newVal) {
         //showPickerModel由false变为true
         if (
