@@ -1,7 +1,7 @@
 {
   "name": "vuejs-mobile-datepicker",
   "description": "A Vue component to vuejs-mobile-datepicker",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "author": "J1ong <2419782227@qq.com>",
   "license": "MIT",
   "private": false,
@@ -18,6 +18,15 @@
     "last 2 versions",
     "not ie <= 8"
   ],
+  "keywords": ["vue","vuejs","mobile","datepicker"],     
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/J1ong/vuejs-mobile-datepicker"        
+  },
+  "homepage": "https://github.com/J1ong/vuejs-mobile-datepicker",    
+  "bugs": {
+    "url": "https://github.com/J1ong/vuejs-mobile-datepicker/issues"
+  },    
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",

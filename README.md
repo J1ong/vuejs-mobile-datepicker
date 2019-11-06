@@ -1,7 +1,10 @@
 # Vue Component Plugin
 
 > A Vue component plugin to vuejs-mobile-datepicker 
+
 ## View
+
+组件功能在线演示地址 [demo](https://1g703.csb.app/)(为有更好的体验，请在浏览器上切换到手机模式或在手机上体验)
 
 <img src="https://img-blog.csdnimg.cn/2019080110422253.gif" width="50%">
 
@@ -30,6 +33,7 @@ export default {
 |  名称   | 描述  |  类型   | 默认值  |
 |  ----  | ----  |  ----  | ----  |
 | show-picker-model  | 控制日期选择器显示隐藏 | Boolean  | false |
+| mark-weekend  |  是否标记周末日期  |  Boolean  | false |
 | default-date  | 默认选择日期 | Date  | new Date() |
 | start-date  | 日期选择器可选最小日期 | Date  | new Date('1900-1-1') |
 | end-date  | 日期选择器可选最大日期 | Date  | new Date() |

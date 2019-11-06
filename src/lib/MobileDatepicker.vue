@@ -1,12 +1,12 @@
 <template>
-  <div id="mobile-datepicker" v-show="showPickerModel">
+  <div id="mobile-datepicker" v-show="showPickerModel" @click.self="handleCancel">
     <div class="mdp_container">
       <div class="mdp_header">
         <div
           class="mdp_current_year"
           :class="{'active':changeContentFlag}"
           @click="showYearPicker()"
-        >{{this.currentYear}}年</div>
+        >{{this.currentYear}}年</div><br/>
         <div
           class="mdp_current_date"
           :class="{'active':!changeContentFlag}"
@@ -29,12 +29,12 @@
             ></span>
           </div>
           <div class="mdp_weeks">
-            <span class="mdp_week" v-for="(item,index) in weeks" :key="index">{{item}}</span>
+            <span class="mdp_week" :class="{'mark':markWeekend&&(index==0||index==6)}" v-for="(item,index) in weeks" :key="index">{{item}}</span>
           </div>
           <div class="mdp_pick_day">
             <span
               class="mdp_day"
-              :class="{'active':(item==currentDay&&month==currentMonth)&&!dayIsDisable(item),'mdp_day_disable':dayIsDisable(item)}"
+              :class="{'active':(item==currentDay&&month==currentMonth)&&!dayIsDisable(item),'mdp_day_disable':dayIsDisable(item),'mark': markWeekend&&dayIsWeekend(index)}"
               v-for="(item,index) in days"
               :key="index"
               @click="handleClickDay(item)"
@@ -64,30 +64,34 @@
 export default {
   name: "MobileDatepicker",
   props: {
-    showPickerModel: {
+    showPickerModel: { //控制选择器显隐
       type: Boolean,
       default: false
     },
-    defaultDate: {
+    defaultDate: {  //默认选中日期
       type: Date,
       default: () => {
         return new Date();
       }
     },
-    startDate: {
+    startDate: {  //可选范围开始日期
       type: Date,
       default: () => {
         return new Date("1900-1-1");
       }
     },
-    endDate: {
+    endDate: {  //可选范围结束日期
       type: Date,
       default: () => {
         return new Date();
       }
     },
-    disableDate: {
+    disableDate: { //禁用日期函数
       type: Function
+    },
+    markWeekend: { //是否标记周末
+      type: Boolean,
+      default: false
     }
   },
   created() {
@@ -96,23 +100,20 @@ export default {
       this.initDate(this.defaultDate); //初始化日期
     }
   },
-  mounted() {
-    this.adaptContent();
-  },
   data() {
     return {
-      weeks: ["一", "二", "三", "四", "五", "六", "日"],
-      days: [],
-      years: [],
-      monthLastDay: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
-      year: null,
-      currentYear: null,
-      month: null,
-      currentMonth: null,
-      day: null,
-      currentDay: null,
-      week: null,
-      changeContentFlag: false
+      weeks: ["日", "一", "二", "三", "四", "五", "六"],  //周几
+      days: [],  //某年某月的日期数组，如[0,0,1,2,3,4,....,31]
+      years: [],  //可选范围的年份数组，如[1991,1992,...,2019]
+      monthLastDay: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],  //某年对应月份最大天数
+      year: null,  
+      currentYear: null,  
+      month: null, 
+      currentMonth: null,  
+      day: null,  
+      currentDay: null,  
+      week: null, 
+      changeContentFlag: false  //控制选择器显隐
     };
   },
   watch: {
@@ -133,14 +134,6 @@ export default {
     }
   },
   methods: {
-    adaptContent() {
-      //获取html元素
-      var html = document.getElementsByTagName("html")[0];
-      //屏幕的宽度（兼容处理）
-      var w = document.documentElement.clientWidth || document.body.clientWidth;
-      //7.5这个数字是根据你的设计图的实际大小来的，所以值具体根据设计图的大小
-      html.style.fontSize = w / 7.5 + "px";
-    },
     handleCancel() {
       //处理取消点击
       this.changeContentFlag = false; //关闭年份选择面板
@@ -159,9 +152,7 @@ export default {
       this.currentYear = this.year = defaultDate.getFullYear(); //年
       this.currentMonth = this.month = defaultDate.getMonth(); //月
       this.currentDay = this.day = defaultDate.getDate(); //日
-      this.week = this.weeks[
-        (defaultDate.getDay() == 0 ? 7 : defaultDate.getDay()) - 1
-      ]; //周
+      this.week = this.weeks[defaultDate.getDay()]; //周
       this.years = [];
       for (
         let i = 0;
@@ -180,12 +171,8 @@ export default {
         this.monthLastDay[1] = 29; //2月有29天
       }
       let firstDay = new Date(year, month, 1).getDay(); //根据年月获取第一天是周几
-      if (firstDay == 0) {
-        //如果为周日，则置7
-        firstDay = 7;
-      }
       this.days = [];
-      for (let i = 1; i < firstDay; i++) {
+      for (let i = 0; i < firstDay; i++) {
         this.days.push(0); //往第一天前面补0，如第一天周二，则需前面补2个0
       }
       for (let j = 1; j <= this.monthLastDay[month]; j++) {
@@ -234,7 +221,7 @@ export default {
       this.currentMonth = this.month;
       this.currentDay = this.day = item;
       let date = new Date(this.currentYear, this.currentMonth, this.currentDay);
-      this.week = this.weeks[(date.getDay() == 0 ? 7 : date.getDay()) - 1]; //获取更新日期周
+      this.week = this.weeks[date.getDay()]; //获取更新日期周
     },
     handleClickYear(item) {
       //处理年份点击事件
@@ -243,17 +230,13 @@ export default {
         this.year = this.currentYear = this.startDate.getFullYear();
         this.month = this.currentMonth = this.startDate.getMonth();
         this.day = this.currentDay = this.startDate.getDate();
-        this.week = this.weeks[
-          (this.startDate.getDay() == 0 ? 7 : this.startDate.getDay()) - 1
-        ];
+        this.week = this.weeks[this.startDate.getDay()];
       } else if (new Date(item, this.month, this.day) > this.endDate) {
         //超出最大可选日期，置为最大日期
         this.year = this.currentYear = this.endDate.getFullYear();
         this.month = this.currentMonth = this.endDate.getMonth();
         this.day = this.currentDay = this.endDate.getDate();
-        this.week = this.weeks[
-          (this.endDate.getDay() == 0 ? 7 : this.endDate.getDay()) - 1
-        ];
+        this.week = this.weeks[this.endDate.getDay()];
       } else {
         //更新到当前点击日期
         if (
@@ -283,7 +266,7 @@ export default {
         this.month = this.currentMonth;
         this.day = this.currentDay; //更新切换面板年月日
         let date = new Date(this.year, this.month, this.day);
-        this.week = this.weeks[(date.getDay() == 0 ? 7 : date.getDay()) - 1];
+        this.week = this.weeks[date.getDay()];
       }
       this.updateDate(this.year, this.month); //根据年月更新日期
       this.changeContentFlag = false; //关闭年份选择面板
@@ -328,6 +311,12 @@ export default {
         //禁用函数存在，符合函数规则，禁用
         if (this.disableDate(this.year + "-" + (this.month + 1) + "-" + item))
           return true;
+      }
+      return false;
+    },
+    dayIsWeekend(index) {
+      if(index%7==0||index%7==6){
+        return true;
       }
       return false;
     }
@@ -477,12 +466,15 @@ ul {
   box-sizing: border-box;
   color: #eee;
   padding: 0.4rem 0.6rem;
+  font-size: 0
 }
 .mdp_current_year {
   font-size: 0.3125rem;
+  display: inline-block
 }
 .mdp_current_date {
   font-size: 0.6125rem;
+  display: inline-block
 }
 .mdp_current_year.active,
 .mdp_current_date.active {
@@ -537,6 +529,9 @@ ul {
   justify-content: center;
   align-items: center;
 }
+.mdp_week.mark {
+  color: #dd2727
+}
 .mdp_pick_day {
   font-size: 0.24rem;
   width: 100%;
@@ -551,16 +546,19 @@ ul {
   justify-content: center;
   align-items: center;
 }
+.mdp_day.mdp_day_disable {
+  background-color: #f5f7fa;
+  cursor: not-allowed;
+  color: #c0c4cc !important;
+}
+.mdp_day.mark {
+  color: #dd2727
+}
 .mdp_day.active {
   width: 14.2%;
   background-color: #dd2727;
   border-radius: 50%;
   color: #fff;
-}
-.mdp_day_disable {
-  background-color: #f5f7fa;
-  cursor: not-allowed;
-  color: #c0c4cc;
 }
 .mdp_year_content {
   width: 100%;
@@ -599,8 +597,9 @@ ul {
   color: #dd2727;
   background-color: #fff;
   font-weight: 500;
+  font-size: 0.275rem;
 }
 .mdp_cancel_button {
-  margin-right: 0.4rem;
+  margin-right: 0.6rem;
 }
 </style>
