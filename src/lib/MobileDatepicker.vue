@@ -7,12 +7,13 @@
           class="mdp_current_year"
           :class="{'active':changeContentFlag}"
           @click="showYearPicker()"
-        >{{this.currentYear}}年</div><br/>
+        >{{currentYear}}{{isEnglish?"":"年"}}</div>
+        <br />
         <div
           class="mdp_current_date"
           :class="{'active':!changeContentFlag}"
           @click="showDatePicker()"
-        >{{this.currentMonth+1}}月{{this.currentDay}}日周{{this.week}}</div>
+        >{{currentDateText}}</div>
       </div>
       <!-- 组件头部结束 -->
       <!-- 组件主体内容开始 -->
@@ -22,23 +23,28 @@
           <div class="mdp_switch_month">
             <span
               class="mdp_left mdp_arrow"
-              :class="{'mdp_arrow_hide':this.startDate-new Date(this.year,this.month,1)>=0}"
+              :class="{'mdp_arrow_hide':startDate-new Date(year,month,1)>=0}"
               @click="preMonth"
             ></span>
-            <span class="mdp_current_month">{{this.year}}年{{this.month+1}}月</span>
+            <span class="mdp_current_month">{{currentMonthText}}</span>
             <span
               class="mdp_right mdp_arrow"
-              :class="{'mdp_arrow_hide':this.endDate-new Date(this.year,this.month+1,1)<=0}"
+              :class="{'mdp_arrow_hide':endDate-new Date(year,month+1,1)<=0}"
               @click="nextMonth"
             ></span>
           </div>
           <div class="mdp_weeks">
-            <span class="mdp_week" :class="{'mark':markWeekend&&(index==0||index==6)}" v-for="(item,index) in weeks" :key="index">{{item}}</span>
+            <span
+              class="mdp_week"
+              :class="{'mark':markWeekend&&(index==0||index==6)}"
+              v-for="(item,index) in isEnglish?enShortWeeks:weeks"
+              :key="index"
+            >{{isEnglish?item[0]:item}}</span>
           </div>
           <div class="mdp_pick_day">
             <span
               class="mdp_day"
-              :class="{'active':(item==currentDay&&month==currentMonth)&&!dayIsDisable(item),'mdp_day_disable':dayIsDisable(item),'mark': markWeekend&&dayIsWeekend(index)}"
+              :class="{'active':activeDay(item),'mdp_day_disable':dayIsDisable(item),'mark': markWeekend&&dayIsWeekend(index)}"
               v-for="(item,index) in days"
               :key="index"
               @click="handleClickDay(item)"
@@ -60,8 +66,14 @@
       <!-- 组件主体内容结束 -->
       <!-- 组件操作按钮开始 -->
       <div class="mdp_operate_button">
-        <button class="mdp_cancel_button mdp_button" @click="handleCancel">取消</button>
-        <button class="mdp_sure_button mdp_button" @click="handleConfirm">确认</button>
+        <button
+          class="mdp_cancel_button mdp_button"
+          @click="handleCancel"
+        >{{isEnglish?"CANCEL":"取消"}}</button>
+        <button
+          class="mdp_sure_button mdp_button"
+          @click="handleConfirm"
+        >{{isEnglish?"CONFIRM":"确认"}}</button>
       </div>
       <!-- 组件操作按钮结束 -->
     </div>
@@ -72,59 +84,87 @@
 export default {
   name: "MobileDatepicker",
   props: {
-    showPickerModel: { //控制显隐
+    showPickerModel: {
+      //控制显隐
       type: Boolean,
       default: false
     },
-    defaultDate: {  //默认选中日期
+    defaultDate: {
+      //默认选中日期
       type: Date,
       default: () => {
         return new Date();
       }
     },
-    startDate: {  //可选范围开始日期
+    startDate: {
+      //可选范围开始日期
       type: Date,
       default: () => {
         return new Date("1900-1-1");
       }
     },
-    endDate: {  //可选范围结束日期
+    endDate: {
+      //可选范围结束日期
       type: Date,
       default: () => {
         return new Date();
       }
     },
-    disableDate: { //禁用日期函数
+    disableDate: {
+      //禁用日期函数
       type: Function
     },
-    markWeekend: { //标记周末
+    markWeekend: {
+      //标记周末
       type: Boolean,
       default: false
+    },
+    language: {
+      //语言
+      type: String,
+      default: "Chinese"
     }
   },
   created() {
-    if (this.showPickerModel && this.defaultDate) {  //保证刷新，数据不丢失
+    if (this.showPickerModel && this.defaultDate) {
+      //保证刷新，数据不丢失
       this.initDate(this.defaultDate); //初始化日期
     }
   },
   data() {
     return {
-      weeks: ["日", "一", "二", "三", "四", "五", "六"],  //周几数组
-      days: [],  //某年某月的日期数组，如[0,0,1,2,3,4,....,31]
-      years: [],  //可选范围的年份数组，如[1991,1992,...,2019]
-      monthLastDay: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],  //某年对应月份最大天数
-      year: null,  
-      currentYear: null,  
-      month: null, 
-      currentMonth: null,  
-      day: null,  
-      currentDay: null,  
-      week: null, 
-      changeContentFlag: false  //切换主体内容显示为日期或年份
+      weeks: ["日", "一", "二", "三", "四", "五", "六"], //周 数组
+      enMonth: [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ], //英文 月份
+      enShortWeeks: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], //英文 周
+      days: [], //某年某月的日期数组，如[0,0,1,2,3,4,....,31]
+      years: [], //可选范围的年份数组，如[1991,1992,...,2019]
+      monthLastDay: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31], //某年对应月份最大天数
+      year: null,
+      currentYear: null,
+      month: null,
+      currentMonth: null,
+      day: null,
+      currentDay: null,
+      week: null,
+      changeContentFlag: false //切换主体内容显示为日期或年份
     };
   },
   watch: {
-    showPickerModel(newVal, oldVal) { //监测showPickerModel的变动
+    showPickerModel(newVal, oldVal) {
+      //监测showPickerModel的变动
       if (newVal) {
         //showPickerModel由false变为true
         if (
@@ -136,6 +176,29 @@ export default {
         } else {
           this.$emit("cancel"); //触发取消事件
         }
+      }
+    }
+  },
+  computed: {
+    isEnglish() { //语言版本是否为英语
+      return this.language == "English";
+    },
+    currentDateText(){  //当前日期显示文本
+      if(this.isEnglish){
+        if(this.enMonth[this.currentMonth]){
+          return (this.enShortWeeks[this.weeks.indexOf(this.week)])+", "+this.enMonth[this.currentMonth].substring(0,3)+" "+this.currentDay;
+        }else{
+          return (this.enShortWeeks[this.weeks.indexOf(this.week)])+", ";
+        }
+      }else{
+        return (this.currentMonth+1)+"月"+this.currentDay+"日周"+this.week;
+      }
+    },
+    currentMonthText(){  //当前月份显示文本
+      if(this.isEnglish){
+        return this.enMonth[this.month]+" "+this.year
+      }else{
+        return this.year+"年"+(this.month+1)+"月"
       }
     }
   },
@@ -298,6 +361,9 @@ export default {
         });
       }
     },
+    activeDay(day){  //选中日期
+      return (day==this.currentDay&&this.month==this.currentMonth)&&!this.dayIsDisable(day)
+    },
     dayIsDisable(item) {
       //禁用日期，返回true为禁用
       if (item == 0) {
@@ -320,8 +386,8 @@ export default {
       }
       return false;
     },
-    dayIsWeekend(index) {
-      if(index%7==0||index%7==6){
+    dayIsWeekend(index) {  //是否为周末
+      if (index % 7 == 0 || index % 7 == 6) {
         return true;
       }
       return false;
@@ -441,6 +507,10 @@ export default {
     font-size: 288px;
   }
 }
+html {
+  font-family: font-apple-system, system-ui, BlinkMacSystemFont, Helvetica Neue,
+    PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, sans-serif;
+}
 * {
   margin: 0;
   padding: 0;
@@ -472,15 +542,15 @@ ul {
   box-sizing: border-box;
   color: #eee;
   padding: 0.4rem 0.6rem;
-  font-size: 0
+  font-size: 0;
 }
 .mdp_current_year {
   font-size: 0.3125rem;
-  display: inline-block
+  display: inline-block;
 }
 .mdp_current_date {
   font-size: 0.6125rem;
-  display: inline-block
+  display: inline-block;
 }
 .mdp_current_year.active,
 .mdp_current_date.active {
@@ -525,7 +595,7 @@ ul {
   width: 100%;
   display: flex;
   align-items: center;
-  font-size: 0.24rem;
+  font-size: 0.25rem;
   color: #888;
 }
 .mdp_week {
@@ -536,10 +606,10 @@ ul {
   align-items: center;
 }
 .mdp_week.mark {
-  color: #dd2727
+  color: #dd2727;
 }
 .mdp_pick_day {
-  font-size: 0.24rem;
+  font-size: 0.25rem;
   width: 100%;
   display: flex;
   align-items: center;
@@ -558,7 +628,7 @@ ul {
   color: #c0c4cc !important;
 }
 .mdp_day.mark {
-  color: #dd2727
+  color: #dd2727;
 }
 .mdp_day.active {
   width: 14.2%;

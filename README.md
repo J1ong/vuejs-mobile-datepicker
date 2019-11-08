@@ -34,17 +34,18 @@ export default {
 |  ----  | ----  |  ----  | ----  |
 | show-picker-model  | 控制选择器显隐 | Boolean  | false |
 | mark-weekend  |  标记周末日期  |  Boolean  | false |
+| language  |  语言  |  String  | "Chinese" |
 | default-date  | 默认选中日期 | Date  | new Date() |
-| start-date  | 可选范围开始日期 | Date  | new Date('1900-1-1') |
+| start-date  | 可选范围开始日期 | Date  | new Date("1900-1-1") |
 | end-date  | 可选范围结束日期 | Date  | new Date() |
-| disable-date  | 禁用日期,参数为某日期，如（'2018-8-8'），<br>函数返回Boolean值，为true禁用 | Function  | --- |
+| disable-date  | 禁用日期，参数为日期字符串，返回true则禁用 | Function  | --- |
 
 ## Method
 
 |  名称   | 描述  |  回调   | 
 |  ----  | ----  |  ----  | 
 | cancel  | 取消按钮触发事件 | --- |
-| confirm  | 确认按钮触发事件，回调参数为选中日期如（'2018-8-8'） | ---  | 
+| confirm  | 确认按钮触发事件，回调参数为选中日期如（"2018-8-8"） | ---  | 
 
 ## More
 
