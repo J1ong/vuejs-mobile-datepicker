@@ -1,7 +1,7 @@
 {
   "name": "vuejs-mobile-datepicker",
   "description": "A Vue component to vuejs-mobile-datepicker",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "author": "J1ong <2419782227@qq.com>",
   "license": "MIT",
   "private": false,
