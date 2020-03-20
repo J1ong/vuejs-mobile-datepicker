@@ -18,15 +18,28 @@
     "last 2 versions",
     "not ie <= 8"
   ],
-  "keywords": ["js","vue","vuejs","mobile","datepicker","vue-component","vue-plugin","phone","calendar","date","date-picker","picker"],     
+  "keywords": [
+    "js",
+    "vue",
+    "vuejs",
+    "mobile",
+    "datepicker",
+    "vue-component",
+    "vue-plugin",
+    "phone",
+    "calendar",
+    "date",
+    "date-picker",
+    "picker"
+  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/J1ong/vuejs-mobile-datepicker"        
+    "url": "https://github.com/J1ong/vuejs-mobile-datepicker"
   },
-  "homepage": "https://github.com/J1ong/vuejs-mobile-datepicker",    
+  "homepage": "https://github.com/J1ong/vuejs-mobile-datepicker",
   "bugs": {
     "url": "https://github.com/J1ong/vuejs-mobile-datepicker/issues"
-  },    
+  },
   "devDependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",

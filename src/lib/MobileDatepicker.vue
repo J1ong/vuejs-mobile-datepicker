@@ -22,16 +22,24 @@
         <div class="mdp_date_content" v-show="!changeContentFlag">
           <div class="mdp_switch_month">
             <span
-              class="mdp_left mdp_arrow"
+              class="mdp_arrow_action"
               :class="{'mdp_arrow_hide':startDate-new Date(year,month,1)>=0}"
               @click="preMonth"
-            ></span>
+            >
+              <span
+                class="mdp_left mdp_arrow"
+              ></span>
+            </span>
             <span class="mdp_current_month">{{currentMonthText}}</span>
             <span
-              class="mdp_right mdp_arrow"
+              class="mdp_arrow_action"
               :class="{'mdp_arrow_hide':endDate-new Date(year,month+1,1)<=0}"
               @click="nextMonth"
-            ></span>
+            >
+              <span
+                class="mdp_right mdp_arrow"
+              ></span>
+            </span>
           </div>
           <div class="mdp_weeks">
             <span
@@ -79,7 +87,7 @@
     </div>
   </div>
 </template>
- 
+
 <script>
 export default {
   name: "MobileDatepicker",
@@ -395,7 +403,7 @@ export default {
   }
 };
 </script>
- 
+
 <style>
 @media (min-width: 240px) {
   html {
@@ -574,6 +582,12 @@ ul {
   height: 1.2rem;
   font-weight: 500;
   font-size: 0.3125rem;
+}
+.mdp_arrow_action {
+  display: inline-block;
+  text-align: center;
+  min-height: 0.3rem;
+  min-width: 0.6rem;
 }
 .mdp_arrow {
   display: inline-block;
