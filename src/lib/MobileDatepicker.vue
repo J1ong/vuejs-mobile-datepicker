@@ -22,16 +22,20 @@
         <div class="mdp_date_content" v-show="!changeContentFlag">
           <div class="mdp_switch_month">
             <span
-              class="mdp_left mdp_arrow"
+              class="mdp_arrow_action"
               :class="{'mdp_arrow_hide':startDate-new Date(year,month,1)>=0}"
               @click="preMonth"
-            ></span>
+            >
+              <span class="mdp_left mdp_arrow"></span>
+            </span>
             <span class="mdp_current_month">{{currentMonthText}}</span>
             <span
-              class="mdp_right mdp_arrow"
+              class="mdp_arrow_action"
               :class="{'mdp_arrow_hide':endDate-new Date(year,month+1,1)<=0}"
               @click="nextMonth"
-            ></span>
+            >
+              <span class="mdp_right mdp_arrow"></span>
+            </span>
           </div>
           <div class="mdp_weeks">
             <span
@@ -73,7 +77,7 @@
         <button
           class="mdp_sure_button mdp_button"
           @click="handleConfirm"
-        >{{isEnglish?"CONFIRM":"确认"}}</button>
+        >{{isEnglish?"OK":"确认"}}</button>
       </div>
       <!-- 组件操作按钮结束 -->
     </div>
@@ -122,7 +126,7 @@ export default {
     language: {
       //语言
       type: String,
-      default: "Chinese"
+      default: "zh"
     }
   },
   created() {
@@ -181,7 +185,7 @@ export default {
   },
   computed: {
     isEnglish() { //语言版本是否为英语
-      return this.language == "English";
+      return this.language == "en";
     },
     currentDateText(){  //当前日期显示文本
       if(this.isEnglish){
@@ -354,7 +358,7 @@ export default {
         this.$nextTick(() => {
           //使用nextTick为了保证dom元素都已经渲染完毕
           scrollYearListY =
-            (this.currentYear - this.startDate.getFullYear() - 2) *
+            (this.currentYear - this.startDate.getFullYear() - 3) *
             this.$refs.mdp_year_list.firstElementChild.offsetHeight;
           scrollYearListY = scrollYearListY < 0 ? 0 : scrollYearListY;
           this.$refs.mdp_year_list.scrollTop = scrollYearListY;
@@ -575,6 +579,13 @@ ul {
   font-weight: 500;
   font-size: 0.3125rem;
 }
+.mdp_arrow_action {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 0.6rem;
+  min-width: 0.6rem;
+}
 .mdp_arrow {
   display: inline-block;
   width: 0.16rem;
@@ -653,8 +664,10 @@ ul {
 .mdp_year_content ul li {
   padding: 0.4rem 0;
   height: 1rem;
-  text-align: center;
   box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .mdp_year_content ul li.active {
   font-size: 0.465rem;
