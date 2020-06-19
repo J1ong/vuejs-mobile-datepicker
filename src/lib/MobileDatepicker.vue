@@ -1,87 +1,89 @@
 <template>
-  <div id="mobile-datepicker" v-show="showPickerModel" @click.self="handleCancel">
-    <div class="mdp_container">
-      <!-- 组件头部开始 -->
-      <div class="mdp_header">
-        <div
-          class="mdp_current_year"
-          :class="{'active':changeContentFlag}"
-          @click="showYearPicker()"
-        >{{currentYear}}{{isEnglish?"":"年"}}</div>
-        <br />
-        <div
-          class="mdp_current_date"
-          :class="{'active':!changeContentFlag}"
-          @click="showDatePicker()"
-        >{{currentDateText}}</div>
-      </div>
-      <!-- 组件头部结束 -->
-      <!-- 组件主体内容开始 -->
-      <div class="mdp_content">
-        <!-- 组件日期主体内容开始 -->
-        <div class="mdp_date_content" v-show="!changeContentFlag">
-          <div class="mdp_switch_month">
-            <span
-              class="mdp_arrow_action"
-              :class="{'mdp_arrow_hide':startDate-new Date(year,month,1)>=0}"
-              @click="preMonth"
-            >
-              <span class="mdp_left mdp_arrow"></span>
-            </span>
-            <span class="mdp_current_month">{{currentMonthText}}</span>
-            <span
-              class="mdp_arrow_action"
-              :class="{'mdp_arrow_hide':endDate-new Date(year,month+1,1)<=0}"
-              @click="nextMonth"
-            >
-              <span class="mdp_right mdp_arrow"></span>
-            </span>
+  <transition name="fade">
+    <div id="mobile-datepicker" v-show="showPickerModel" @click.self="handleCancel">
+      <div class="mdp_container">
+        <!-- 组件头部开始 -->
+        <div class="mdp_header">
+          <div
+            class="mdp_current_year"
+            :class="{'active':changeContentFlag}"
+            @click="showYearPicker()"
+          >{{currentYear}}{{isEnglish?"":"年"}}</div>
+          <br />
+          <div
+            class="mdp_current_date"
+            :class="{'active':!changeContentFlag}"
+            @click="showDatePicker()"
+          >{{currentDateText}}</div>
+        </div>
+        <!-- 组件头部结束 -->
+        <!-- 组件主体内容开始 -->
+        <div class="mdp_content">
+          <!-- 组件日期主体内容开始 -->
+          <div class="mdp_date_content" v-show="!changeContentFlag">
+            <div class="mdp_switch_month">
+              <span
+                class="mdp_arrow_action"
+                :class="{'mdp_arrow_hide':startDate-new Date(year,month,1)>=0}"
+                @click="preMonth"
+              >
+                <span class="mdp_left mdp_arrow"></span>
+              </span>
+              <span class="mdp_current_month">{{currentMonthText}}</span>
+              <span
+                class="mdp_arrow_action"
+                :class="{'mdp_arrow_hide':endDate-new Date(year,month+1,1)<=0}"
+                @click="nextMonth"
+              >
+                <span class="mdp_right mdp_arrow"></span>
+              </span>
+            </div>
+            <div class="mdp_weeks">
+              <span
+                class="mdp_week"
+                :class="{'mark':markWeekend&&(index==0||index==6)}"
+                v-for="(item,index) in isEnglish?enShortWeeks:weeks"
+                :key="index"
+              >{{isEnglish?item[0]:item}}</span>
+            </div>
+            <div class="mdp_pick_day">
+              <span
+                class="mdp_day"
+                :class="{'active':activeDay(item),'mdp_day_disable':dayIsDisable(item),'mark': markWeekend&&dayIsWeekend(index)}"
+                v-for="(item,index) in days"
+                :key="index"
+                @click="handleClickDay(item)"
+              >{{item?item:' '}}</span>
+            </div>
           </div>
-          <div class="mdp_weeks">
-            <span
-              class="mdp_week"
-              :class="{'mark':markWeekend&&(index==0||index==6)}"
-              v-for="(item,index) in isEnglish?enShortWeeks:weeks"
-              :key="index"
-            >{{isEnglish?item[0]:item}}</span>
-          </div>
-          <div class="mdp_pick_day">
-            <span
-              class="mdp_day"
-              :class="{'active':activeDay(item),'mdp_day_disable':dayIsDisable(item),'mark': markWeekend&&dayIsWeekend(index)}"
-              v-for="(item,index) in days"
-              :key="index"
-              @click="handleClickDay(item)"
-            >{{item?item:' '}}</span>
+          <!-- 组件年份主体内容结束 -->
+          <div class="mdp_year_content" v-show="changeContentFlag">
+            <ul ref="mdp_year_list">
+              <li
+                v-for="(item,index) in years"
+                :key="index"
+                :class="{'active':item==currentYear}"
+                @click="handleClickYear(item)"
+              >{{item}}</li>
+            </ul>
           </div>
         </div>
-        <!-- 组件年份主体内容结束 -->
-        <div class="mdp_year_content" v-show="changeContentFlag">
-          <ul ref="mdp_year_list">
-            <li
-              v-for="(item,index) in years"
-              :key="index"
-              :class="{'active':item==currentYear}"
-              @click="handleClickYear(item)"
-            >{{item}}</li>
-          </ul>
+        <!-- 组件主体内容结束 -->
+        <!-- 组件操作按钮开始 -->
+        <div class="mdp_operate_button">
+          <button
+            class="mdp_cancel_button mdp_button"
+            @click="handleCancel"
+          >{{isEnglish?"CANCEL":"取消"}}</button>
+          <button
+            class="mdp_sure_button mdp_button"
+            @click="handleConfirm"
+          >{{isEnglish?"OK":"确认"}}</button>
         </div>
+        <!-- 组件操作按钮结束 -->
       </div>
-      <!-- 组件主体内容结束 -->
-      <!-- 组件操作按钮开始 -->
-      <div class="mdp_operate_button">
-        <button
-          class="mdp_cancel_button mdp_button"
-          @click="handleCancel"
-        >{{isEnglish?"CANCEL":"取消"}}</button>
-        <button
-          class="mdp_sure_button mdp_button"
-          @click="handleConfirm"
-        >{{isEnglish?"OK":"确认"}}</button>
-      </div>
-      <!-- 组件操作按钮结束 -->
-    </div>
   </div>
+  </transition>
 </template>
  
 <script>
@@ -359,7 +361,7 @@ export default {
           //使用nextTick为了保证dom元素都已经渲染完毕
           scrollYearListY =
             (this.currentYear - this.startDate.getFullYear() - 3) *
-            this.$refs.mdp_year_list.firstElementChild.offsetHeight;
+            this.$refs.mdp_year_list.firstElementChild.getBoundingClientRect().height;
           scrollYearListY = scrollYearListY < 0 ? 0 : scrollYearListY;
           this.$refs.mdp_year_list.scrollTop = scrollYearListY;
         });
@@ -522,6 +524,12 @@ html {
 ol,
 ul {
   list-style: none;
+}
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
 }
 #mobile-datepicker {
   position: fixed;
