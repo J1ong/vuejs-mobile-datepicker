@@ -106,7 +106,7 @@ export default {
       //可选范围开始日期
       type: Date,
       default: () => {
-        return new Date("1900-1-1");
+        return new Date("1900/1/1");
       }
     },
     endDate: {
@@ -219,7 +219,7 @@ export default {
       this.changeContentFlag = false; //关闭年份选择面板
       this.$emit(
         "confirm",
-        this.currentYear + "-" + (this.currentMonth + 1) + "-" + this.currentDay
+        this.currentYear + "/" + (this.currentMonth + 1) + "/" + this.currentDay
       ); //触发确认事件，参数为选择的日期，如2019-7-7
     },
     initDate(defaultDate) {
@@ -287,7 +287,7 @@ export default {
       }
       if (
         typeof this.disableDate == "function" &&
-        this.disableDate(this.year + "-" + (this.month + 1) + "-" + item)
+        this.disableDate(this.year + "/" + (this.month + 1) + "/" + item)
       ) {
         ////禁用函数存在，符合禁用规则
         return;
@@ -317,7 +317,7 @@ export default {
         if (
           typeof this.disableDate == "function" &&
           this.disableDate(
-            item + "-" + (this.currentMonth + 1) + "-" + this.day
+            item + "/" + (this.currentMonth + 1) + "/" + this.day
           )
         ) {
           //禁用函数存在，符合禁用规则
@@ -377,9 +377,9 @@ export default {
       }
       if (
         this.startDate -
-          new Date(this.year + "-" + (this.month + 1) + "-" + item) >
+          new Date(this.year + "/" + (this.month + 1) + "/" + item) >
           0 ||
-        new Date(this.year + "-" + (this.month + 1) + "-" + item) -
+        new Date(this.year + "/" + (this.month + 1) + "/" + item) -
           this.endDate >
           0
       ) {
@@ -387,7 +387,7 @@ export default {
         return true;
       } else if (this.disableDate && typeof this.disableDate == "function") {
         //禁用函数存在，符合函数规则，禁用
-        if (this.disableDate(this.year + "-" + (this.month + 1) + "-" + item))
+        if (this.disableDate(this.year + "/" + (this.month + 1) + "/" + item))
           return true;
       }
       return false;
